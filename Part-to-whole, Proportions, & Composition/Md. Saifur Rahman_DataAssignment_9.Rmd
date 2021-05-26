@@ -1,0 +1,109 @@
+---
+title: "DataAssignment_9"
+author: "Md. Saifur Rahman"
+date: "3/24/2021"
+output: word_document
+---
+
+
+```{r Setup the working directory, include=FALSE}
+setwd("C:/Users/mdsaifur.rahman.1/Desktop/Spring 2021/EFR 535/Code R")
+
+```
+
+```{r Load package, include=FALSE}
+library(ggplot2)
+library(tidyverse)
+library(waffle)
+```
+
+```{r Set all theme as classic from ggplot2, include=FALSE}
+theme_set(theme_classic())
+```
+
+#  **Task-1: With the information provided, create a data frame..**
+
+***
+
+
+```{r Create data frame, view data and attach the data}
+# Create new data frame
+Data_LMS <- data.frame( elements = c("Videos", "Readings", "Discussion Boards", "Assignments", "Quizzes"),
+                        average = c(82.3,16.4,33.1,71.9,42.7))
+view(Data_LMS)
+attach(Data_LMS)
+
+```
+
+
+#  **Task-2: Create a stacked barplot. Change colors of the bars, adjust the width, reorder the stacks and add data labels to them. Then add a title for the chart and center it.**
+
+***
+
+```{r Create a stacked barplot}
+# Draw stacked barplot
+# without color stacked barplot is impossible to read
+ggplot(Data_LMS, aes(x="", y=average))+ geom_bar(stat = "identity")
+
+# Add color to understand stacked barplot
+ggplot(Data_LMS, aes(x="", y=average, fill= elements))+ geom_bar(stat = "identity")
+
+# Change colors of the bars. I am using 'scale_fill_brewer()' to change the color of bars. 
+ggplot(Data_LMS, aes(x="", y=average, fill= elements))+ geom_bar(stat = "identity")+ scale_fill_brewer(palette = "Spectral")
+
+# Adjust the width. Width becomes half by 'width = 0.5' attributes.
+ggplot(Data_LMS, aes(x="", y=average, fill= elements))+ geom_bar(stat = "identity", width = 0.5)+ scale_fill_brewer(palette = "Spectral")
+
+# Reorder the stacks. Use 'reorder()' function to reorder the bars in the stack.
+ggplot(Data_LMS, aes(x="", y=average, fill= reorder(elements,average)))+ geom_bar(stat = "identity", width = 0.5)+ scale_fill_brewer(palette = "Spectral")
+
+# Add data labels to them. Use 'geom_text()' to add value labels, modify color, modify size, and position of the labels.
+ggplot(Data_LMS, aes(x="", y=average, fill= reorder(elements,average)))+ geom_bar(stat = "identity", width = 0.5)+ scale_fill_brewer(palette = "Spectral")+ geom_text(aes(label=average),size=3.5, color="black", position = position_stack(vjust = 0.5))
+
+# Add a title for the chart and center it. Use 'ggtitle()' function to add a title. Use 'theme()' function to modify size of the title and center the title in this plot.
+ggplot(Data_LMS, aes(x="", y=average, fill= reorder(elements,average)))+ geom_bar(stat = "identity", width = 0.5)+ scale_fill_brewer(palette = "Spectral")+ geom_text(aes(label=average),size=3.5, color="black", position = position_stack(vjust = 0.5))+ ggtitle("Average Student Activity in Various Elements") + theme(plot.title = element_text(hjust = 0.5,size = 10)) 
+
+```
+
+#  **Task-3: Transform your stacked barplot into a pie chart. Remove the x- and y-axis labels and lines. OPTIONAL: Then put data labels on the pie slices. Make the labels on the pie slices percentages and reorder the slices from largest to smallest starting at 12 o’clock.**
+
+***
+
+```{r Stacked barplot to pie chart}
+# Transform your stacked barplot into a pie chart
+# Use 'coord_polar()' function to create pie chart from the stacked barplot. The 'theta = y', tells circulate plot onto y axis and the 'start = 0', tells start from at 12 o'clock.
+ggplot(Data_LMS, aes(x="", y=average, fill= elements))+ geom_bar(stat = "identity")+ scale_fill_brewer(palette = "Spectral")+coord_polar(theta = "y", start = 0)
+
+# Remove the x- and y-axis labels and lines. I am adding a title too. Use 'labs()' and 'theme()' functions to modify these.
+ggplot(Data_LMS, aes(x="", y=average, fill= elements))+ geom_bar(stat = "identity")+ scale_fill_brewer(palette = "Spectral")+coord_polar(theta = "y", start = 0)+ labs(x=NULL,y=NULL, title="Average Student Activity in Various Elements") + theme(axis.line = element_blank(),plot.title = element_text(hjust = 0.5, size = 10))
+
+# Then put data labels on the pie slices. Use 'geom_text()' function to add value labels and adjust the position of the labels.
+ggplot(Data_LMS, aes(x="", y=average, fill= elements))+ geom_bar(stat = "identity")+ scale_fill_brewer(palette = "Spectral")+coord_polar(theta = "y", start = 0)+ labs(x=NULL,y=NULL,title="Average Student Activity in Various Elements") + theme(axis.line = element_blank(),axis.text = element_blank(),plot.title = element_text(hjust = 0.5,size = 10))+ geom_text(aes(label=average), position = position_stack(vjust = 0.5))
+
+# Make the labels on the pie slices percentages.
+# create a new variable to insert percent value in the data frame. Use 'percent()' unction to convert percent value into percent presentation. Use 'round()' function to select 3 values after decimal point.
+Data_LMS$average_perc <- Data_LMS$average/sum(Data_LMS$average)
+
+ggplot(Data_LMS, aes(x="", y=average, fill= elements))+ geom_bar(stat = "identity")+ scale_fill_brewer(palette = "Spectral")+coord_polar(theta = "y", start = 0)+ labs(x=NULL,y=NULL,title="Average Student Activity in Various Elements") + theme(axis.line = element_blank(),axis.text = element_blank(),plot.title = element_text(hjust = 0.5,size = 8))+ geom_text(aes(label=scales::percent(round(average_perc,3))), position = position_stack(vjust = 0.5),size=4)
+
+# Reorder the slices from largest to smallest starting at 12 o’clock. Use 'reorder()' function to reorder the slices.
+ggplot(Data_LMS, aes(x="", y=average, fill= reorder(elements,average_perc)))+ geom_bar(stat = "identity")+ scale_fill_brewer(palette = "Spectral")+coord_polar(theta = "y", start = 0)+ labs(x=NULL,y=NULL,title="Average Student Activity in Various Elements") + theme(axis.line = element_blank(),axis.text = element_blank(),plot.title = element_text(hjust = 0.5,size = 8))+
+  geom_text(aes(label=scales::percent(round(average_perc,3))), position = position_stack(vjust = 0.5),size=4)
+```
+
+#  **Task-4: Using the same data, create a waffle chart.**
+
+***
+
+```{r Waffle Chart}
+# Create a waffle chart with original data value. This doesn't present the percent measurement of the types of elements.  
+waffle(c("Videos"=82.3,"Readings"=16.4,"Discusion Boards"=33.1,"Assignments"=71.9,"Quizzes"=42.7),rows = 10)
+
+# Create a waffle chart with percent value. I get this percent value from the previous pie chart with percent value labels. I can also get these percent value from the 'average_perc' column of my data frame.
+waffle(c("Videos"=33.4,"Readings"=6.7,"Discusion Boards"=13.4,"Assignments"=29.2,"Quizzes"=17.3),rows = 10)
+
+# This waffle chart with percent value lack two squares because waffle chart doesn't consider values after decimal point. So the total, 0.4+0.7+0.4+0.2+0.3 = 2 squares is missing in this waffle chart.To overcome this issue I consider those two percent as "Mixed" of all elements and present this 2% as "Mixed" category in this 10x10 waffle chart. I add a title for this waffle chart using 'ggtitle()' function and modify the size, color, and center the title. 
+waffle(c("Videos"=33.4,"Readings"=6.7,"Discusion Boards"=13.4,"Assignments"=29.2,"Quizzes"=17.3, "Mixed"=0.4+0.7+0.4+0.2+0.3),rows = 10)+ ggtitle("Average Student Activity in Various Elements")+theme(plot.title = element_text(hjust = 0.5,size = 10,colour = "blue"))
+
+```
+
