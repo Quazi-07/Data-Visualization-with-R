@@ -1,0 +1,157 @@
+---
+title: "DataAssignment_10"
+author: "Md. Saifur Rahman"
+date: "3/28/2021"
+output: word_document
+---
+
+
+```{r setup the working directory, include=FALSE}
+setwd("C:/Users/mdsaifur.rahman.1/Desktop/Spring 2021/EFR 535/Code R")
+
+```
+
+```{r load package, include=FALSE}
+library(ggplot2)
+library(tidyverse)
+library(psych) # basic calculation
+library(apaTables) # correlation matrix in APA format
+# install.packages("hexbin")
+library(hexbin) # Hexagon bin scatterplot
+# install.packages("ggcorrplot")
+library(ggcorrplot) # correlation heat map
+#install.package("GGally")
+library(GGally) # Correlation matrix with extra visuals
+# install.packages("ggExtra")
+library(ggExtra) # marginal histogram
+```
+
+```{r set all theme as classic from ggplot2, include=FALSE}
+theme_set(theme_classic())
+```
+
+#  **Task-1: Load the Tophat2 dataset.**
+
+***
+
+```{r Load data, view data and attach the data}
+
+library(readxl)
+Data <- read_excel("C:/Users/mdsaifur.rahman.1/Desktop/Spring 2021/EFR 535/Code R/Tophat data2 - April 15 2019.xls", 
+    na = "NA")
+View(Data)
+attach(Data)
+
+```
+
+#  **Task-2: Create a correlogram to examine the correlations among the following Tophat variables: Tophat_participation_percent, Tophat_total_Qs_answered, Tophat_Qs_Correct, Tophat_Qs_Incorrect, Tophat_Qs_percentcorrect, Exam_1_outof60, Exam_2_outof60, Exam_3_outof60, Exam_4_outof100. Identify two correlations (1 meduim/large positive, 1 medium/large negative) to investigate further.**
+
+***
+
+## Identify two correlations (1 meduim/large positive, 1 medium/large negative) to investigate further.
+
+## **Answer:** From the square shaped correlogram it has been found that there is a strong positive correlation (0.9) in between "Tophat_Qs_Correct" and "Tophat_total_Qs_answered". So, most of the answer is correct according to this dataset. On the other hand, because of same reason there is a large negative correlation in between "Tophat_Qs_Incorrect" and "Tophat_total_Qs_answered".
+
+```{r Correlogram}
+# Create subset with continuous variable form the original dataset
+Data_cor <- subset(Data, select = c("Tophat_participation_percent", "Tophat_total_Qs_answered", "Tophat_Qs_Correct", "Tophat_Qs_Incorrect", "Tophat_Qs_percentcorrect", "Exam_1_outof60", "Exam_2_outof60", "Exam_3_outof60", "Exam_4_outof100"))
+
+# Round the data and consider 1 value after decimal point for correlation
+Data_cor_round <- round(cor(Data_cor),1)
+
+# Draw Correlogram with circle shape
+ggcorrplot(Data_cor_round, hc.order = TRUE, type = "upper", lab = FALSE, lab_size = 3, method = "circle", title = "Correlogram of Tophat2 dataset")
+
+# Draw Correlogram with square shape. Show the label values.
+ggcorrplot(Data_cor_round, hc.order = TRUE, type = "lower", lab = TRUE, lab_size = 3, method = "square", title = "Correlogram of Tophat2 dataset", colors = c("tomato2","white","springgreen3"),ggtheme = theme_bw)
+```
+
+#  **Task-3: Examine the relationship between Tophat_participation_percent and Exam_1_outof60 with a scatterplot. What issue is this plot having and how can you resolve it to better visualize the relationship between these variables?**
+
+***
+
+## What issue is this plot having and how can you resolve it to better visualize the relationship between these variables?
+
+## **Answer:** There is a lots of overlap in this scatterplot. To better understand this scatterplot I am using jittter option to jitter the position of the data points but still need more work. Then, I color those data points exam points (Exam_1_outof60) which make this more easy to understand. Add a title to dercribe the graph. 
+
+```{r Scatterplot}
+# Examine the relationship between Tophat_participation_percent and Exam_1_outof60 with a scatterplot.
+ggplot(Data_cor, aes(Exam_1_outof60,Tophat_participation_percent))+geom_point()
+
+# jitter the data help to better visualize the points but still, need some work!
+ggplot(Data_cor, aes(Exam_1_outof60,Tophat_participation_percent))+geom_point(position = "jitter")
+
+# Add "color" attributes to make the visualization more easy to visualize. Add a title.
+ggplot(Data_cor, aes(Exam_1_outof60,Tophat_participation_percent, color=Exam_1_outof60))+geom_point(position = "jitter") + labs(title = "Relationship between 'Tophat_participation_percent' and 'Exam_1_outof60'")
+
+# Try this but not so good for this data!
+#ggplot(Data_cor, aes(Exam_1_outof60,Tophat_participation_percent))+geom_count(color="blue")
+```
+
+#  **Task-4:  Using your identified variables that are positively correlated, create a scatterplot. Include in your plot a regression line, standard error confidence band, and correlation coefficient. Make this into an object and create a marginal density plot. What did you learn about these variables and their relationship that you didn't know before creating the plot?**
+
+***
+
+## What did you learn about these variables and their relationship that you didn't know before creating the plot?
+
+## **Answer:** I come to know that total number of correct answers(Tophat_Qs_Correct) increases with total number of answers (Tophat_total_Qs_answered) given by students. 
+
+```{r Scatterplot with positive correlation variables}
+# Using your identified variables that are positively correlated, create a scatterplot.
+ggplot(Data_cor, aes(Tophat_total_Qs_answered,Tophat_Qs_Correct))+geom_point()
+
+# Add a regression line.
+ggplot(Data_cor, aes(Tophat_total_Qs_answered,Tophat_Qs_Correct))+geom_point()+ geom_smooth()
+
+# Remove standard error confidence band by setting se = FALSE.
+ggplot(Data_cor, aes(Tophat_total_Qs_answered,Tophat_Qs_Correct))+geom_point()+ geom_smooth( se = FALSE)
+
+# Add correlation coefficient. Add a title , center the title and change color. 
+ggplot(Data_cor, aes(Tophat_total_Qs_answered,Tophat_Qs_Correct))+geom_point()+geom_smooth(se = FALSE)+ annotate(200,300, label=paste("r = ", round(cor(Data_cor$Tophat_total_Qs_answered,Data_cor$Tophat_Qs_Correct),3)),geom = "text", size=5) + ggtitle("'Tophat_Qs_Correct' Vs. 'Tophat_total_Qs_answered'")+theme(plot.title = element_text(hjust = 0.5, color = "slateblue"))
+
+
+# Make this into an object and create a marginal density plot.
+# Create an object to reuse in creating marginal density plot.
+Plot2object <- ggplot(Data_cor, aes(Tophat_total_Qs_answered,Tophat_Qs_Correct))+geom_point()+geom_smooth(se = FALSE)+ annotate(200,300, label=paste("r = ", round(cor(Data_cor$Tophat_total_Qs_answered,Data_cor$Tophat_Qs_Correct),3)),geom = "text", size=5)+  ggtitle("'Tophat_Qs_Correct' Vs. 'Tophat_total_Qs_answered'")+theme(plot.title = element_text(hjust = 0.5, color = "slateblue"))+theme_bw()
+
+# Draw marginal density plot using the 'ggMargin()' function from 'ggExtra' package.
+ggMarginal(Plot2object,type="density", color= "red", fill = "cyan")
+
+```
+
+#  **Task-5:  Create 2 different charts to show the associations among your two negatively correlated variables: Count chart, binned scatterplot square or hex, countours, 2d density.**
+
+***
+
+```{r Plot with negative correlation variables}
+# Binned scatterplot with hex shape
+ggplot(Data_cor, aes(Tophat_total_Qs_answered,Tophat_Qs_Incorrect))+ geom_hex(bins = 15)
+
+# Scatterplot with 2d density
+ggplot(Data_cor, aes(Tophat_total_Qs_answered,Tophat_Qs_Incorrect))+geom_point()+geom_density2d()
+```
+
+#  **Task-6: Use the variables Program_of_Study2 and/or Year, create 2 plots that cross numeric variables while also identifying student groups according to two aesthetics or plots of your choosing: color, shape, transparency, size, matrix, ellipses, bubbles.**
+
+***
+
+```{r Other charts}
+# Bubble chart
+# (3 variables) Consider coloring by the program of study group (color=Program_of_Study)
+ggplot(Data, aes(Tophat_total_Qs_answered,Tophat_Qs_Correct,color=Program_of_Study))+geom_point(alpha=0.3)
+
+# (4 variables) Bubble chart with two continuous variable "Tophat_total_Qs_answered" and "Tophat_Qs_Correct" while grouping by two categorical variables  "Program_of_Study" for coloring and "Year" for diferent size. 
+ggplot(Data, aes(Tophat_total_Qs_answered,Tophat_Qs_Correct,color=Program_of_Study,size=Year))+geom_point(alpha=0.3)
+
+# (4 variables) Bubble chart with two continuous variable "Tophat_total_Qs_answered" and "Tophat_Qs_Correct" while grouping by two categorical variables  "Program_of_Study" for coloring and "Year" for diferent shape. 
+ggplot(Data, aes(Tophat_total_Qs_answered,Tophat_Qs_Correct,color=Program_of_Study,shape=Year))+geom_point(alpha=0.3)
+
+# (Many variables) Correlation among many variable. Here, color range means positivity or negativity of correlation. 
+ggcorrplot(Data_cor_round, hc.order = TRUE, type = "upper", lab = FALSE, lab_size = 3, method = "circle", title = "Correlogram of Tophat2")
+
+
+# Correlation among several variable. Using APA format from apaTables package.
+apa.cor.table(Data_cor_round, filename = NA,table.number = NA, show.conf.interval = FALSE,landscape = TRUE)
+
+```
+
