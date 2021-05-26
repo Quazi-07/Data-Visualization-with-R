@@ -1,0 +1,152 @@
+---
+title: "week13"
+author: "Md. Saifur Rahman"
+date: "4/12/2021"
+output: word_document
+---
+
+
+```{r setup the working directory, include=FALSE}
+setwd("C:/Users/mdsaifur.rahman.1/Desktop/Spring 2021/EFR 535/Code R")
+
+```
+
+```{r load package, include=FALSE}
+library(ggplot2)
+library(tidyverse)
+library(psych) # basic calculation
+
+```
+
+```{r set all theme as classic from ggplot2, include=FALSE}
+theme_set(theme_classic())
+```
+
+```{r load data, view data and attach the data}
+#?ToothGrowth
+Data_tooth <- ToothGrowth
+attach(Data_tooth)
+View(Data_tooth)
+
+```
+
+```{r box plot}
+# use actor() function to convert in factor
+ggplot(Data_tooth, aes(factor(dose), len, fill=dose))+geom_boxplot()
+
+
+# convert into factor
+Data_tooth$dose <- as.factor(Data_tooth$dose)
+
+# box plot
+ggplot(Data_tooth, aes(dose, len, fill=dose))+geom_boxplot()
+
+# change the legend title
+ggplot(Data_tooth, aes(dose, len, fill=dose))+geom_boxplot()+ labs(fill = "Dose(mg)")
+
+# Add a title
+ggplot(Data_tooth, aes(dose, len, fill=dose))+geom_boxplot()+ labs(fill = "Dose(mg)", title = "The Effect of Vitamin C on Tooth Growth in Guinea Pigs")
+ggplot(Data_tooth, aes(dose, len, fill=dose))+geom_boxplot()+ labs(fill = "Dose(mg)") + ggtitle("The Effect of Vitamin C on Tooth Growth in Guinea Pigs")
+
+# Add subtitle
+ggplot(Data_tooth, aes(dose, len, fill=dose))+geom_boxplot()+ labs(fill = "Dose(mg)", title = "The Effect of Vitamin C on Tooth Growth in Guinea Pigs", subtitle = "This is a test \n subtitle")
+
+# x-axis label and y-axis label
+ggplot(Data_tooth, aes(dose, len, fill=dose))+geom_boxplot()+ labs(fill = "Dose(mg)", title = "The Effect of Vitamin C on Tooth Growth in Guinea Pigs", subtitle = "This is a test subtitle", x= "Dose", y = "Length")
+
+# Add a caption
+ggplot(Data_tooth, aes(dose, len, fill=dose))+geom_boxplot()+ labs(fill = "Dose(mg)", title = "The Effect of Vitamin C on Tooth Growth in Guinea Pigs", subtitle = "This is a test subtitle", x= "Dose", y = "Length", caption = "Dataset source: ggplot ToothGrowth")
+
+
+# Modify color, font, position tc
+ggplot(Data_tooth, aes(dose, len, fill=dose))+geom_boxplot()+ labs(fill = "Dose(mg)", title = "The Effect of Vitamin C on Tooth Growth in Guinea Pigs", subtitle = "This is a test subtitle", x= "Dose", y = "Length", caption = "Dataset source: ggplot ToothGrowth") + theme(text = element_text(color = "red", family = "serif"),plot.title = element_text(color = "blue", hjust = 0.5, size = 18), plot.subtitle = element_text(size=14, color = "green", hjust = 0.5),axis.title.y = element_text(angle = 45, vjust = .5))
+
+
+# change legend position
+# top
+ggplot(Data_tooth, aes(dose, len, fill=dose))+geom_boxplot()+ labs(fill = "Dose(mg)", title = "The Effect of Vitamin C on Tooth Growth in Guinea Pigs", subtitle = "This is a test subtitle", x= "Dose", y = "Length", caption = "Dataset source: ggplot ToothGrowth") + theme(text = element_text(color = "red", family = "serif"),plot.title = element_text(color = "blue", hjust = 0.5, size = 18), plot.subtitle = element_text(size=14, color = "green", hjust = 0.5),axis.title.y = element_text(angle = 45, vjust = .5), legend.position = "top")
+
+# left
+ggplot(Data_tooth, aes(dose, len, fill=dose))+geom_boxplot()+ labs(fill = "Dose(mg)", title = "The Effect of Vitamin C on Tooth Growth in Guinea Pigs", subtitle = "This is a test subtitle", x= "Dose", y = "Length", caption = "Dataset source: ggplot ToothGrowth") + theme(text = element_text(color = "red", family = "serif"),plot.title = element_text(color = "blue", hjust = 0.5, size = 18), plot.subtitle = element_text(size=14, color = "green", hjust = 0.5),axis.title.y = element_text(angle = 45, vjust = .5), legend.position = "left")
+
+# remove legend 
+ggplot(Data_tooth, aes(dose, len, fill=dose))+geom_boxplot()+ labs(fill = "Dose(mg)", title = "The Effect of Vitamin C on Tooth Growth in Guinea Pigs", subtitle = "This is a test subtitle", x= "Dose", y = "Length", caption = "Dataset source: ggplot ToothGrowth") + theme(text = element_text(color = "red", family = "serif"),plot.title = element_text(color = "blue", hjust = 0.5, size = 18), plot.subtitle = element_text(size=14, color = "green", hjust = 0.5),axis.title.y = element_text(angle = 45, vjust = .5), legend.position = "none")
+```
+
+```{r Uncertainity error in R}
+# load the dataset
+Data_mpg = mpg
+attach(Data_mpg)
+
+# convert into factor
+Data_mpg$class <- as.factor(Data_mpg$class)
+
+```
+
+```{r Calculate SD}
+# Standard deviation on tooth dataset
+library(dplyr)
+
+Data_tooth.summary <- Data_tooth %>% group_by(dose) %>% summarise(sd=sd(len,na.rm = TRUE), len = mean(len))
+
+Data_tooth.summary
+
+
+# Standard deviation on mpg dataset
+
+Data_mpg.summary <- Data_mpg %>% group_by(class) %>% summarise(sd=sd(hwy,na.rm = TRUE), hwy = mean(hwy))
+
+Data_mpg.summary
+
+```
+
+```{r bar plot}
+# stat = "identity" because it is presummarized data
+ggplot(Data_tooth.summary, aes(dose,len))+ geom_bar(stat = "identity", fill = "lightblue", color = "black")
+
+ggplot(Data_mpg.summary, aes(class,hwy))+ geom_bar(stat = "identity",fill = "lightgreen", color = "black")
+
+
+```
+
+```{r bar plot with error bar}
+ggplot(Data_tooth.summary, aes(dose,len))+ geom_bar(stat = "identity", fill = "lightblue", color = "black")+ geom_errorbar(aes(ymin = len - sd, ymax = len+sd), width = 0.2)
+
+ggplot(Data_tooth.summary, aes(dose,len))+ geom_bar(stat = "identity", fill = "lightblue", color = "black")+ geom_errorbar(aes(ymin = len, ymax = len+sd), width = 0.2)
+
+
+ggplot(Data_mpg.summary, aes(class,hwy))+ geom_bar(stat = "identity",fill = "lightgreen", color = "black") + geom_errorbar(aes(ymin = hwy - sd, ymax = hwy+sd), width = 0.2)
+
+
+# Only error bar
+ggplot(Data_tooth.summary, aes(dose,len))+  geom_errorbar(aes(ymin = len - sd, ymax = len+sd), width = 0.2)
+ggplot(Data_mpg.summary, aes(class,hwy))+ geom_errorbar(aes(ymin = hwy - sd, ymax = hwy+sd), width = 0.2)
+
+
+# add mean point
+ggplot(Data_tooth.summary, aes(dose,len))+  geom_errorbar(aes(ymin = len - sd, ymax = len+sd), width = 0.2) + geom_point()
+ggplot(Data_mpg.summary, aes(class,hwy))+ geom_errorbar(aes(ymin = hwy - sd, ymax = hwy+sd), width = 0.2)+ geom_point()
+
+# geom_pointrange()
+ggplot(Data_tooth.summary, aes(dose,len))+  geom_pointrange(aes(ymin = len - sd, ymax = len+sd))
+ggplot(Data_mpg.summary, aes(class,hwy))+ geom_pointrange(aes(ymin = hwy - sd, ymax = hwy+sd))
+
+# geom_linerange
+ggplot(Data_tooth.summary, aes(dose,len))+  geom_linerange(aes(ymin = len - sd, ymax = len+sd))
+ggplot(Data_mpg.summary, aes(class,hwy))+ geom_linerange(aes(ymin = hwy - sd, ymax = hwy+sd))
+
+# horizontal look
+
+ggplot(Data_tooth.summary, aes(len,dose))+ geom_bar(stat = "identity", fill = "lightblue", color = "black")+ geom_errorbar(aes(xmin = len - sd, xmax = len+sd), width = 0.2)
+
+ggplot(Data_mpg.summary, aes(hwy, class))+ geom_bar(stat = "identity",fill = "lightgreen", color = "black") + geom_errorbar(aes(xmin = hwy - sd, xmax = hwy+sd), width = 0.2)
+
+```
+
+```{r with jitterd points}
+ggplot(Data_tooth, aes(dose,len))+ geom_jitter(position = position_jitter(0.2), color="lightgreen")+ geom_errorbar(aes(ymin = len - sd, ymax = len+sd), width = 0.2, data=Data_tooth.summary)
+
+ggplot(Data_mpg, aes(class,hwy))+ geom_jitter(position = position_jitter(0.2), color="lightgrey") + geom_errorbar(aes(ymin = hwy - sd, ymax = hwy+sd), width = 0.2, data = Data_mpg.summary)
+
+```
+
