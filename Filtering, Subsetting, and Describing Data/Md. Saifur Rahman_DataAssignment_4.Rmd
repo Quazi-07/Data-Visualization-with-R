@@ -1,0 +1,123 @@
+---
+title: "DataAsignmrnt_4"
+author: "Md. Saifur Rahman"
+date: "2/13/2021"
+output: html_document
+---
+
+```{r setup the working directory}
+setwd("C:/Users/mdsaifur.rahman.1/Desktop/Spring 2021/EFR 535/Code R")
+
+```
+
+```{r Load packages}
+library(tidyverse)
+#install.packages("psych")
+library(psych)
+#install.packages("summarytools")
+library(summarytools)
+#install.packages("janitor")
+library(janitor)
+#install.packages("apaTables")
+library(apaTables)
+```
+
+```{r Load the Gateway Course data and attach data }
+library(readxl)
+Data <- read_excel("EFR 535 Assign 4 - Gateway course - Feb 9 2021.xls", 
+    na = "NA")
+View(Data)
+attach(Data)
+```
+
+```{r subset command to create a data frame}
+# Use the subset command to create a data frame that filters for only Sophomore students and subsets only the first eight variables.
+Data_sophomore <- subset(Data, Academic_Level=="Sophomore", select=SEX:ACTCOMP)
+Data_sophomore
+```
+```{r Create frequency tables using the three techniques for the variables: sex, ACTCOMP}
+# Frequency Table using Base R
+table(Data_sophomore$SEX)
+table(Data_sophomore$ACTCOMP)
+
+# Frequency Table using janitor package
+tabyl(Data_sophomore$SEX)
+tabyl(Data_sophomore,ACTCOMP)
+
+# Frequency Table using summarytools package
+freq(Data_sophomore$SEX)
+freq(Data_sophomore$ACTCOMP)
+
+# Which technique do you prefer and why? 
+# I prefer to use freq() function from summarytools package. This gives more information on frequency of a variable than other techniques with rounded decimal number after decimal point.  
+```
+
+```{r Create atleast one histogram or boxplot}
+# Histogram on variable ACTCOMP from the 'Data_sophomore' data frame.
+hist(Data_sophomore$ACTCOMP, col = "red")
+# Boxplot on the same variable
+boxplot(Data_sophomore$Hsgpa, col = "blue")
+```
+
+```{r select and filter commands to create a data frame}
+# Use dplyr package with the select and filter commands to create a data frame with only students who are undecided in their major and the columns AGE and Hsgpa.
+Data_major <- filter(Data, Academic_Plan == "Undecided") %>% select(AGE,Hsgpa)
+Data_major
+```
+```{r Calculate descriptive statistics using the three techniques }
+# Describe using Base R
+summary(Data_major$AGE)
+summary(Data_major$Hsgpa)
+
+# Describe using psych package
+describe(Data_major$AGE)
+describe(Data_major$Hsgpa)
+
+# Describe using summarytools package
+descr(Data_major$AGE)
+descr(Data_major$Hsgpa)
+
+#Which technique do you prefer and why?
+# I prefer to use descr() function from summarytools package. This give most information/functionality with meaning. If anyone feels too much information, then I can limit information to print by using 'stats' argument of this function. That's easy! This function has some other useful arguments like style, headings etc.
+```
+
+```{r square brackets technique to create data frame and apply correlation among variables}
+# Use the square brackets technique to create another new data frame such that you can run correlations among only the following variables: Fall11_Credits_enrld, Fall11_TERMGPA, TRM_PASSED, Fall12_credits_enrld.
+Data_corel <- Data[,names(Data) %in% c("Fall11_Credits_enrld", "Fall11_TERMGPA", "TRM_PASSED", "Fall12_credits_enrld")]
+Data_corel
+# Correlation among variables of the 'Data_corel' data frame
+# Correlation using Base R
+cor(Data_corel, use = "pairwise.complete.obs")
+?cor
+
+# Correlation using psych package
+lowerCor(Data_corel)
+corr.test(Data_corel)
+corPlot(Data_corel, numbers = TRUE, upper = FALSE,diag = FALSE)
+
+# Corelation using apaTables package
+apa.cor.table(Data_corel, filename = "correlationTableFromAPA.doc", landscape = TRUE)
+
+#  Identify 2 correlations that looked interesting to you, which technique most made them standout, and describe what they indicate.
+# From the correlation output I am seeing that (i) 'Fall-11 Credits enrolled' has a good correlation with 'term Passed' but not that much good correlation with 'Term GPA' of that semester. (ii) 'Fall-12 credits enrolled' don't have any good correlation with any of there variables! I prefer to use correlation from 'psych package' because I can check correlation with lowerCor(), I can check probability correlation and number correlation using corr.test() function, and I can draw a plot of these correlation using corPlot() from this package. 
+```
+
+```{r Run a t-test}
+#  Run a t-test, including checking the appropriate assumptions, to determine if there were gender differences in the number of term credits enrolled (Fall11_Credits_enrld) and passed (TRM_PASSED).
+# At first see basic summary statistics on gender by describeBy()
+describeBy(Data, Data$SEX)
+
+# Perform bartlett's test 
+# check if varience/p value > 0.05. I am looking for a yes! Unfortunately, in this case I get p < 0.05 for both variable test. So, in the t-test I will set var.equal = FALSE. 
+bartlett.test( Fall11_Credits_enrld ~ SEX, Data)
+bartlett.test( TRM_PASSED ~ SEX, Data)
+
+# Now perform t-test
+?t.test
+# I get P< 0.05 in bartlett's test so set 'var.equal = FALSE' which will ensure the  Welch (or Satterthwaite) approximation to the degrees of freedom is used.
+t.test( Fall11_Credits_enrld ~ SEX, Data, paired = FALSE, var.equal = FALSE)
+t.test( TRM_PASSED ~ SEX, Data, paired = FALSE, var.equal = FALSE)
+# Explain what these results mean.
+# From the t-test I get P< 0.05. This means there is gender difference in the number of credits enrolled fall-11 and the term passed on the same semester. Female enrollement for credits in fall-11 was significantly higher than Male. Female students were passed more than Male students too.
+```
+
