@@ -1,0 +1,150 @@
+---
+title: "DataAssignment_7"
+author: "Md. Saifur Rahman"
+date: "3/7/2021"
+output: word_document
+---
+
+```{r setup the working directory, include=FALSE}
+setwd("C:/Users/mdsaifur.rahman.1/Desktop/Spring 2021/EFR 535/Code R")
+
+```
+
+```{r load package, include=FALSE}
+library(ggplot2)
+library(tidyverse)
+```
+
+#  **Task-1: Load the Tophat dataset**
+
+***
+
+```{r load, view, and attach Tophat data}
+library(readxl)
+Data <- read_excel("EFR 535 Assign 2 - Data Tophat - Jan 18 2018.xls", 
+    na = "NA")
+View(Data)
+attach(Data)
+```
+
+#  **Task-2:  Create a vertical bar chart for Year. Create a horizontal bar chart for Program of Study**
+
+***
+
+```{r Create bar chart}
+# Create a vertical bar chart for Year.
+ggplot(Data, aes(x=Year))+geom_bar()
+# Create a horizontal bar chart for Program of Study.
+ggplot(Data, aes(x=Program_of_Study))+geom_bar()+coord_flip()
+
+```
+
+#  **Task-3:  Change color of all bars**
+
+***
+
+```{r Change color of bars in bar chart}
+# All bars with same color
+ggplot(Data, aes(x=Year))+geom_bar(fill = "blueviolet")
+ggplot(Data, aes(x=Program_of_Study))+geom_bar(fill = "darkcyan")+coord_flip()
+# each bar has different color 
+ggplot(Data, aes(x=Year, fill=Year))+geom_bar()
+```
+
+#  **Task-4:  Change the outline color of the bars so each is different according to the x-axis variable, leaving the fill white. You can use default colors, or the color brewer or grey scales**
+
+***
+
+```{r change outline color}
+# fill white and outline color
+ggplot(Data, aes(x=Year))+geom_bar(fill="white", color = "red")
+ggplot(Data, aes(x=Program_of_Study))+geom_bar(fill="white", color = "chocolate")+coord_flip()
+# Use of color brewer 
+ggplot(Data, aes(x=Year,fill = Year,color = "red"))+geom_bar()+ scale_fill_brewer(palette = "YlOrRd")
+ggplot(Data, aes(x=Program_of_Study, fill = Program_of_Study, color="red"))+geom_bar()+coord_flip()+ scale_fill_brewer(palette = "Spectral")
+# Use of grey scales
+ggplot(Data, aes(x=Year,fill = Year, color = "red"))+geom_bar()+ scale_fill_grey(start=0.10, end = 0.90)+ theme_classic()
+ggplot(Data, aes(x=Program_of_Study, fill = Program_of_Study, color = "red"))+geom_bar()+coord_flip()+ scale_fill_grey(start=0.10, end = 0.90)+theme_classic()
+```
+
+#  **Task-5:  Change the fill color of the bars so each is different according to x-axis variable**
+
+***
+
+```{r Change fill color of bars in bar chart}
+ggplot(Data, aes(x=Year, fill=Year, color="red"))+geom_bar()
+ggplot(Data, aes(x=Program_of_Study,fill=Program_of_Study, color = "chocolate"))+geom_bar()+coord_flip()
+```
+
+#  **Task-6:   Adjust bar width and theme**
+
+***
+
+```{r bar width and theme}
+# adjust bar width
+ggplot(Data, aes(x=Year, fill=Year, color="red"))+geom_bar(width = 0.7)
+ggplot(Data, aes(x=Program_of_Study,fill=Program_of_Study, color = "chocolate"))+geom_bar(width = 0.6)+coord_flip()
+# adjust theme
+ggplot(Data, aes(x=Year, fill=Year, color="red"))+geom_bar(width = 0.7)+ theme_classic()
+ggplot(Data, aes(x=Program_of_Study,fill=Program_of_Study, color = "chocolate"))+geom_bar(width = 0.6)+coord_flip()+ theme_classic()
+```
+
+#  **Task-7:    Create a horizontal barplot in which categorical x-axis = Program of Study and continuous y-axis = Tophat_Qs_Correct. Then create vertical barplot in which categorical x-axis = Year and continuous y-axis = Tophat_total_Qs_answered.**
+
+***
+
+```{r create horizontal and vertical bar plot with both x-axis and y-axis variable with unsummarized data}
+# Unsummarized data (seems wrong information in y-axis!!)
+# Create a horizontal barplot in which categorical x-axis = Program of Study and continuous y-axis = Tophat_Qs_Correct.
+ggplot(Data, aes(x=Program_of_Study, y=Tophat_Qs_Correct)) + geom_bar(stat="identity")
+# I prefer to draw vertical barplot for this setup
+ggplot(Data, aes(x=Program_of_Study, y=Tophat_Qs_Correct)) + geom_bar(stat="identity") + coord_flip()
+# Then create vertical barplot in which categorical x-axis = Year and continuous y-axis = Tophat_total_Qs_answered.
+ggplot(Data, aes(x=Year, y=Tophat_total_Qs_answered)) + geom_bar(stat="identity") + coord_flip()
+# I prefer to draw horizontal barplot for this setup
+ggplot(Data, aes(x=Year, y=Tophat_total_Qs_answered)) + geom_bar(stat="identity") 
+```
+
+#  **Task-8:    Create a new object that contains presummarized data for the variables in the bar charts. Change the color of the bars.**
+
+***
+
+```{r presummarized data}
+# categorical x-axis = Program of Study and continuous y-axis = Tophat_Qs_Correct
+means_CorrectPOS <- aggregate(Tophat_Qs_Correct ~ Program_of_Study, Data, FUN = mean)
+view(means_CorrectPOS)
+# Draw bar plot and change the colors of bars
+ggplot(data=means_CorrectPOS, aes(x=Program_of_Study, y=Tophat_Qs_Correct, fill=Program_of_Study)) + geom_bar(stat="identity") + coord_flip()+scale_fill_brewer(palette = "Spectral")
+
+# categorical x-axis = Year and continuous y-axis = Tophat_total_Qs_answered.
+means_AnsweredYear <- aggregate(Tophat_total_Qs_answered ~ Year, Data, FUN = mean)
+view(means_AnsweredYear)
+# Draw bar plot and change the colors of bars
+ggplot(data=means_AnsweredYear, aes(x=Year, y=Tophat_total_Qs_answered, fill=Year)) + geom_bar(stat="identity", width = 0.6) 
+```
+
+#  **Task-9:   Reorder the bars based on height**
+
+***
+
+```{r Reorder bar based on height}
+# categorical x-axis = Program of Study and continuous y-axis = Tophat_Qs_Correct
+ggplot(data=means_CorrectPOS, aes(x=reorder(Program_of_Study,-Tophat_Qs_Correct), y=Tophat_Qs_Correct, fill=Program_of_Study)) + geom_bar(stat="identity") + coord_flip()+scale_fill_brewer(palette = "Spectral")
+# categorical x-axis = Year and continuous y-axis = Tophat_total_Qs_answered.
+ggplot(data=means_AnsweredYear, aes(x=reorder(Year,Tophat_total_Qs_answered), y=Tophat_total_Qs_answered, fill=Year)) + geom_bar(stat="identity", width = 0.6) 
+```
+
+#  **Task-10:   Choose one of the plots above and create one variant of the bar chart: grouped barplot, dotplot, or lolliplot**
+
+***
+
+```{r gouped barchart/dotplot/lolliplot}
+# Chosen barchart
+ggplot(data=means_CorrectPOS, aes(x=reorder(Program_of_Study,-Tophat_Qs_Correct), y=Tophat_Qs_Correct, fill=Program_of_Study)) + geom_bar(stat="identity") + coord_flip()+scale_fill_brewer(palette = "Spectral")
+# dotplot
+ggplot(data=means_CorrectPOS, aes(x=Program_of_Study, y=Tophat_Qs_Correct)) + geom_point(size=4, color="red")+ theme_classic()+coord_flip()
+# lolliplot
+ggplot(data=means_CorrectPOS, aes(x=Program_of_Study, y=Tophat_Qs_Correct)) + geom_point(size=5, color="chocolate")+ geom_segment(aes(x = Program_of_Study, xend=Program_of_Study,y =0,yend=Tophat_Qs_Correct)) + theme_classic()+coord_flip()
+
+```
+
