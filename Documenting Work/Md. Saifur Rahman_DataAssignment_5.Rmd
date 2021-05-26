@@ -1,0 +1,168 @@
+---
+title: "DataAssignment_5"
+author: "Md. Saifur Rahman"
+date: "2/20/2021"
+output: word_document
+---
+
+#  **Task-1: Use at least 2 levels of headings (Heading Level 1)**
+
+***
+
+## * Setup Working Directory (heading Level 2)
+
+```{r setup working directory}
+# Setup working directory for the assignment
+setwd("C:/Users/mdsaifur.rahman.1/Desktop/Spring 2021/EFR 535/Code R")
+```
+
+$~$
+
+# **Task-3: Mindfully use chunk options (e.g., include = FALSE) to show only necessary code and output.**
+# **Task-4: Integrate white space and paragraphs to separate the components of your output**
+# **Task-5: Use at least one instance of bold, italics, and bold + italic**
+# **Task-6: Make at least one comment inside a code chunk**
+***
+
+## To Load packages do the following. I am loading two packages here.
+
+$~$
+
+(i) 'tidyverse' package
+(ii) 'tibble' package
+
+### This is a separate paragraph. I am using white space to make a separate paragraph. Besides, to get an extara space in between paragraph I am using this symbol '\$\~\$' with a white space in before and after this symbol.I am using *"echo = TRUE, results = 'hide'"* in the code chunk options because I don't want to see the output portion for this code chunk in my word document. Beside, To get rid of warning, error and message; I am using false for these options in code chunk like (***error=FALSE, warning=FALSE,message=FALSE***). I am using '\*\' to make italic, '\*\*\' to make bold, and '***' in this paragraph to make those words bold and italic. I am also using '#' symbol to write a comment inside code chunk.
+
+$~$
+
+```{r load packages, echo=TRUE, results='hide', error=FALSE, warning=FALSE,message=FALSE}
+# install and load "tidyverse" package to work with ggplot2
+library(tidyverse)
+#load "tibble" package to see data in tibble format!
+library(tibble)
+```
+
+$~$
+
+## * Load data in R studio from excel file, view the data and attach the dataset in the R studio environment for further use.
+
+```{r load, view, and attach Tophat data}
+library(readxl)
+Data <- read_excel("EFR 535 Assign 2 - Data Tophat - Jan 18 2018.xls", 
+    na = "NA")
+View(Data)
+attach(Data)
+```
+
+$~$
+
+## * Show the the Tophat data set with a tibble
+
+```{r Examine Tophat data with tibble}
+#Examine the Tophat data set with a tibble
+Data
+# same previous task but using as_tibble() function from "tibble" package
+#as_tibble(Data)
+```
+
+$~$
+
+## * Average and range of Tophat participation percent column
+
+```{r mean and range functions}
+# Average and range of Tophat participation percent column
+mean(Tophat_participation_percent)
+range(Tophat_participation_percent)
+# Average and range of Final Grade percent
+mean(Final_Grade_percent)
+range(Final_Grade_percent)
+```
+
+$~$
+
+## * A Scatter plot comparing Tophat participation percent ( in x axis) and Final Grade percent (in y axis)
+
+```{r ggplot2 graphic template to create a scatterplot, echo=FALSE, fig.height=3, fig.width=3}
+#  This is the code for the above purpose
+ggplot(data = Data) + geom_point( mapping = aes(x = Tophat_participation_percent, y = Final_Grade_percent))
+```
+
+$~$
+
+## **Task-2: Put the questions in text outside of code chunks. You may wish to put any direct answers to assignment questions outside code chunks as well.**
+
+***
+
+## * Did you see much difference between the non-jittered and jittered scatterplots? What does that mean? 
+
+### Answer: There is a little difference in positioning of the dots in the scatter plot after adding "jitter" that is ignorable.This means the position of these values are mostly unique. There are a few values with the same or almost same position in this coordinate system with the given data. Most have different positioning values. The left plot is without using 'jitter' option and the right plot is using 'jitter' option.
+
+```{r jitter the Data, echo=FALSE, fig.height=3, fig.width=3}
+# non jittered
+ggplot(data = Data) + geom_point( mapping = aes(x = Tophat_participation_percent, y = Final_Grade_percent))
+# jittered
+ggplot(data = Data) + geom_point( mapping = aes(x = Tophat_participation_percent, y = Final_Grade_percent), position = "jitter")
+```
+
+$~$
+
+## * Create small multiples of the scatterplot based on Program of Study2 variable. Include a comment on what you observed.
+
+### Answer: This facet_warp() divide the single scatterplot and present the same data in a group of scatter plots based on number of groups find in the "Program_of_Study2" variable. In the Program_of_Study2 variable there are 3 groups (i) Medical Laboratory Science, (ii) Pre-Nursing, and (iii) Other. Most students are from the Pre-nursing group and their final grade percent increases according to the increase in the Tophat participation percent.
+
+```{r Create small multiples of the scatterplot based on Program of Study2 variable, echo=FALSE, fig.height=3}
+# facets
+ggplot(data = Data) + geom_point( mapping = aes(x = Tophat_participation_percent, y = Final_Grade_percent)) + facet_wrap(~Program_of_Study2)
+```
+
+$~$
+
+## * Examine Program of Study2 by including the variable as an aesthetic based on EACH of color, shape, size, and transparency. Which aesthetics did you prefer? 
+
+### Answer: From this four aesthetics my preference is "color" (when work with one aesthetic). Color makes this scatterplot more presentable. This also help me to differentiate the type of color(which color means what) by providing a legend.
+
+```{r Examine Program of Study2 by including the variable as an aesthetic based on EACH of color, shape, size, and transparency, echo=TRUE, error=FALSE,warning=FALSE,message=FALSE,fig.height=3}
+#  based on color
+ggplot(data = Data) + geom_point( mapping = aes(x = Tophat_participation_percent, y = Final_Grade_percent, color = Program_of_Study2))
+# based on shape
+ggplot(data = Data) + geom_point( mapping = aes(x = Tophat_participation_percent, y = Final_Grade_percent, shape = Program_of_Study2))
+# based on size
+ggplot(data = Data) + geom_point( mapping = aes(x = Tophat_participation_percent, y = Final_Grade_percent, size = Program_of_Study2))
+# based on transparency
+ggplot(data = Data) + geom_point( mapping = aes(x = Tophat_participation_percent, y = Final_Grade_percent, alpha = Program_of_Study2))
+```
+
+$~$
+
+## * Choose your favorites to make one plot with two aesthetics applied together
+
+### Answer: Sometimes multiple aesthetics make a graph more presentable. I am using the "color" and "shape" aesthetics here. Different color and different shape to plot the data, make this graph more understandable and presentable.
+
+```{r Choose your favorites to make one plot with two aesthetics applied together,echo=FALSE, fig.height=3}
+ggplot(data = Data) + geom_point( mapping = aes(x = Tophat_participation_percent, y = Final_Grade_percent, color = Program_of_Study2, shape = Program_of_Study2))
+
+```
+
+$~$
+
+## * Add a smooth line. See if you can make your code efficient by using a global mapping of the x- and y-axis.
+
+### The left plot present data in a graph by using a smooth line. Make the same code more efficient by using a global mapping of the x- and y-axis in the right plot.
+```{r smooth line, fig.height=3, fig.width=3, message=FALSE, echo=FALSE}
+# Presentation of data in a graph by using a smooth line.
+ggplot(data = Data) + geom_smooth( mapping = aes(x = Tophat_participation_percent, y = Final_Grade_percent))
+# Make the same above code more efficient by using a global mapping of the x- and y-axis
+ggplot(data = Data, mapping = aes(x = Tophat_participation_percent, y = Final_Grade_percent)) + geom_smooth()
+```
+
+$~$
+
+## * Select a new theme for your graph
+
+### I prefer to use classic theme because this is clean!
+
+```{r Select a new theme for this graph, echo=FALSE, message=FALSE,error=FALSE,warning=FALSE, fig.height=4, fig.width=4}
+# I prefer to use classic theme because this is clean!
+ggplot(data = Data, mapping = aes(x = Tophat_participation_percent, y = Final_Grade_percent)) + geom_smooth() + theme_classic()
+```
+
