@@ -1,0 +1,144 @@
+---
+title: "DataAssignment_11"
+author: "Md. Saifur Rahman"
+date: "4/5/2021"
+output: word_document
+---
+
+
+```{r setup the working directory, include=FALSE}
+setwd("C:/Users/mdsaifur.rahman.1/Desktop/Spring 2021/EFR 535/Code R")
+
+```
+
+```{r load package, include=FALSE}
+library(ggplot2)
+library(tidyverse)
+library(psych) # basic calculation
+
+```
+
+```{r set all theme as classic from ggplot2, include=FALSE}
+theme_set(theme_classic())
+```
+
+#  **Task-1: Download the EFR 535 BB data. Review the data and transform it as necessary into data you can use to complete this assignment.**
+
+***
+
+## **Answer:** I downloaded the EFR 535 BB data file from the lesson 12. I investigate this excel file and finally transform the information from this excel file into a new file named "Necessary data from EFR 535 - 535 Bb data - April 26 2019.xlsx". I organize data based on the requirements written in this Data Assignment 11. I create 5 columns named (i) Lesson, lesson 1 to lesson 7 is listed in this column; (ii) Total_clicks, total number of clicks in each lesson is added together and listed here; (iii) Video_clicks, total number of video clicks is added together and listed against each lesson here; (iv) Data_asignment, the average of data assignment score from each lesson is listed in this column (Lesson 1 doesn't has this score); (v) Quiz, the average of quiz score is listed here (Lesson 1 doesn't has this score). Thus I transform the information from the given file and make this new excel file to use in this assignment.
+
+
+
+```{r load data, view data and attach the data}
+# Load data from excel file
+
+library(readxl)
+Data <- read_excel("C:/Users/mdsaifur.rahman.1/Desktop/Spring 2021/EFR 535/Code R/Necessary data from EFR 535 - 535 Bb data - April 26 2019.xlsx", 
+    na = "NA")
+View(Data)
+attach(Data)
+
+```
+
+#  **Task-2: Visualize the total number of clicks over the course of the seven lessons. Create two unique charts (one line chart, one connected scatterplot) across which you uniquely modify the aesthetics.**
+
+***
+
+```{r Line chart}
+# Visualize the total number of clicks over the course of the seven lessons using line graph
+ggplot(Data, aes(Lesson,Total_clicks))+ geom_line()
+
+# Convert 'Lesson' from number into factor to visualize each lesson in the line graph. Use group=1 to separately identify each group. Use size and color attributes to make this visually appealing.  
+ggplot(Data, aes(factor(Lesson),Total_clicks, group=1))+ geom_line(color= "red", size = 1)
+
+# Use xlab() to rename x label in this graph.
+ggplot(Data, aes(factor(Lesson),Total_clicks, group=1))+ geom_line(color= "red", size = 1)+xlab("Lesson")
+
+```
+
+```{r Connected Scatterplot}
+# Visualize the total number of clicks over the course of the seven lessons using connected scatterplot
+ggplot(Data, aes(Lesson,Total_clicks))+ geom_point()+geom_line()
+
+# Convert 'Lesson' from number into factor to visualize each lesson in the line graph. Use group=1 to separately identify each group. Use size and color attributes to make this visually appealing. 
+ggplot(Data, aes(factor(Lesson),Total_clicks, group=1))+ geom_point(size = 3, color="red")+geom_line(color= "blue", size = 1)
+
+# Use xlab() to rename x label in this graph.
+ggplot(Data, aes(factor(Lesson),Total_clicks, group=1))+ geom_point(size = 3, color="red")+geom_line(color= "blue", size = 1) + xlab("Lesson")
+```
+
+
+#  **Task-3: How did the number of video clicks change over the semester across the lessons? Present the visualization as an area chart. Keep in mind, there were multiple videos for each lesson.**
+
+***
+
+
+## How did the number of video clicks change over the semester across the lessons?
+
+## **Answer:** The number of total video clicks increased from 1st lesson. During the 2nd lesson this video clicks was highest with more than 1000 clicks. After that, there was a declining trend throughout and until the lesson 7, except a raise in lesson 5. 
+
+
+```{r Area chart}
+# Visualize the number of video clicks change over the semester across the lessons using area chart
+ggplot(Data, aes(Lesson,Video_clicks))+ geom_area()
+
+# Convert 'Lesson' from number into factor to visualize each lesson in the line graph. Use group=1 to separately identify each group. Use fill (fill the area with color) and alpha attributes to make this graph visually appealing. 
+ggplot(Data, aes(factor(Lesson),Video_clicks, group=1))+ geom_area(fill = "cyan", alpha = 0.5)
+
+# Use xlab() to rename x label in this graph.
+ggplot(Data, aes(factor(Lesson),Video_clicks, group=1))+ geom_area(fill = "cyan", alpha = 0.5)+ xlab("Lesson")
+```
+
+
+#  **Task-4: Did quiz and data assignment scores follow unique trends over time? Create plots for each of these variables separately. Add smoothed lines to represent the trends for each variable on each plot. Then, take the appropriate steps to plot them on the same graph. BONUS: Add smoothed lines to represent the trends for each variable on the combined plot.**
+
+***
+
+```{r Multiple line graphs}
+# Visualize trends on quiz score over the course of the seven lessons using line graph
+ggplot(Data, aes(Lesson,Quiz))+ geom_line()
+
+# Visualize trends on data assignment score over the course of the seven lessons using line graph
+ggplot(Data, aes(Lesson,Data_assignment))+ geom_line()
+
+# Add smoothed lines to represent the trends for each variable on each plot.Convert 'Lesson' from number into factor to visualize each lesson in the line graph. Use group=1 to separately identify each group. Use xlab() to rename x label in this graph.
+ggplot(Data, aes(factor(Lesson),Quiz, group = 1))+ geom_line()+ geom_smooth() + xlab("Lesson")
+ggplot(Data, aes(factor(Lesson),Data_assignment, group = 1))+ geom_line()+ geom_smooth()+ xlab("Lesson")
+
+# remove confidence band or standard error
+ggplot(Data, aes(factor(Lesson),Quiz, group = 1))+ geom_line()+ geom_smooth(se = FALSE) + xlab("Lesson")
+ggplot(Data, aes(factor(Lesson),Data_assignment, group = 1))+ geom_line()+ geom_smooth(se = FALSE) + xlab("Lesson")
+
+```
+
+```{r multiple graph in the same plot}
+# Visualize trends on quiz score and data assignment score over the course of the seven lessons but in the same plot
+ggplot(Data)+ geom_line(aes(Lesson,Data_assignment))+ geom_line(aes(Lesson,Quiz))
+
+# Convert 'Lesson' from number into factor to visualize each lesson in the line graph. Use group=1 to separately identify each group. Use xlab() to rename x label in this graph. Use ylab() to rename the label in y-axis.
+ggplot(Data)+ geom_line(aes(factor(Lesson),Data_assignment, group=1))+ geom_line(aes(factor(Lesson),Quiz, group =1))+xlab("Lesson")+ylab("Data_assignment/Quiz")
+
+# Still, the scaling is different for these two line graphs! I am rescaling in the following.  
+# Make a new data frame with copy of the previous Data frame 
+Data_combine_plot <- Data
+
+# Investigating the data from the given excel file, I assume that the Quiz is scored by 10 and the data assignment is scored by 15.
+# Rescale in percent convert these two scale into one percent scale. This will help to perform side by side comparison. 
+Data_combine_plot$Quiz_perc <- (Data_combine_plot$Quiz/10)*100
+Data_combine_plot$Assignment_perc = (Data_combine_plot$Data_assignment/15)*100
+
+# Now, plot them in the same graph and scale. 
+ggplot(Data_combine_plot)+ geom_line(aes(Lesson,Assignment_perc))+ geom_line(aes(Lesson,Quiz_perc)) 
+
+# Add text to identify the line and color to make this visually appealing. 
+ggplot(Data_combine_plot)+ geom_line(aes(Lesson,Assignment_perc), color="blue")+ geom_line(aes(Lesson,Quiz_perc),color="red")+ geom_text(aes(2.1,30), label="Data_assignment", color="blue")+ geom_text(aes(1.5,75), label="Quiz", color="red")
+
+# Convert 'Lesson' from number into factor to visualize each lesson in the line graph. Use group=1 to separately identify each group.Use ylab() to rename the label of y-axis. Use xlab() to rename the label of x-axis.
+ggplot(Data_combine_plot)+ geom_line(aes(factor(Lesson),Assignment_perc,group=1), color="blue")+ geom_line(aes(factor(Lesson),Quiz_perc, group=1),color="red")+ geom_text(aes(2.1,30), label="Data_assignment", color="blue")+ geom_text(aes(1.5,75), label="Quiz", color="red")+ylab("Percent")+ylab("Percent")+xlab("Lesson")
+
+# BONUS: Add smoothed lines to represent the trends for each variable on the combined plot
+ggplot(Data_combine_plot)+ geom_line(aes(factor(Lesson),Assignment_perc,group=1), color="darkcyan")+geom_line(aes(factor(Lesson),Quiz_perc, group=1),color="red")+geom_text(aes(2.1,30), label="Data_assignment", color="darkcyan")+ geom_text(aes(1.5,75), label="Quiz", color="red")+ylab("Percent")+ylab("Percent")+xlab("Lesson")+geom_smooth(aes(Lesson,Assignment_perc), se =F)+ geom_smooth(aes(Lesson,Quiz_perc),se=F)
+
+```
+
