@@ -1,0 +1,143 @@
+---
+title: "DataAssignment_8"
+author: "Md. Saifur Rahman"
+date: "3/14/2021"
+output: word_document
+---
+
+```{r Setup the working directory, include=FALSE}
+setwd("C:/Users/mdsaifur.rahman.1/Desktop/Spring 2021/EFR 535/Code R")
+
+```
+
+```{r Load package, include=FALSE}
+library(ggplot2)
+library(tidyverse)
+library(ggridges)
+```
+
+```{r Set all theme as classic from ggplot2, include=FALSE}
+theme_set(theme_classic())
+```
+
+#  **Task-1: Load the Student Performance 04 dataset.**
+
+***
+
+```{r Load, View, and Attach the given dataset}
+library(readxl)
+Data <- read_excel("Student Performance 04.xlsx", 
+    na = "NA")
+View(Data)
+attach(Data)
+```
+
+#  **Task-2: Select three different variables from the dataset and create three unique plots of their distributions (i.e., make one plot for each variable): histogram, frequency polygon, and a density plot.Use best practices as covered in the lesson to modify the plots appearance (color, fill, bin number, bin width, bandwidth, etc.) – EXPLAIN what you did and RATIONALIZE your choices!**
+
+***
+
+## Draw Histogram, Frequency polygon, and Density plot with three diferent variable.
+
+```{r Histogram, Frequency polygon, and Density plot, error=FALSE, warning=FALSE,message=FALSE}
+# Histogram for the continuous variable "GPA" 
+ggplot(Data, aes(GPA))+geom_histogram()
+
+# Frequency Polygon for the continuous variable "hspct_math" (high school percent math!)
+ggplot(Data, aes(hspct_math))+geom_freqpoly()
+
+# Density plot for the continuous variable "credhrs_reg" (total registered credit hours!)
+ggplot(Data, aes(credhrs_reg))+geom_density()
+```
+
+## *Modify plot appearance for Histogram:* In this section, I am using attributes to modify the apprearance of the previous(original) histogram to make this more appealing for the viewers.(i) color="red", draw outline color as red; (ii) fill="cyan4", fill each histogram bar with the cyan color; (iii) bins=15, limit total number of bins to draw this histogram at 15 (default is 30);(iv) I am not sure about the value of GPA in this excel file! This ranges from 26.28 to 447. Setting binwidth = 42 allow only 10+ or 11 bins to draw this histogram.Also, Using alpha to control transparency. 
+
+```{r Modify plot appearance for Histogram, error=FALSE, warning=FALSE,message=FALSE}
+# Histogram for the continuous variable "GPA" 
+# Add color and fill attributes to make this histogram more attractive
+ggplot(Data, aes(GPA))+geom_histogram(color="red", fill="cyan4")
+# Add "bins" attribute 
+ggplot(Data, aes(GPA))+geom_histogram(color="red", fill="cyan4", bins=15)
+# Set binwidth=42 to reduce number of bins. Using alpha to control transparency
+ggplot(Data, aes(GPA))+geom_histogram(color="red", fill="cyan4", binwidth=42, alpha=0.4)
+```
+
+## *Modify plot appearance for Frequency polygon:* In this section, I am using attributes to modify the apprearance of the previous(original) frequency polygon to make this more appealing for the viewers.(i) color="red", convert the default line color to red; (ii) bins=10, make this frequency polygon more user friendly and smooth, (iii) another way to make this polygon easy to understand is using binwidth=42.
+
+```{r Modify plot appearance for Frequency polygon, error=FALSE, warning=FALSE,message=FALSE}
+
+# Frequency Polygon for the continuous variable "hspct_math" (high school percent math!)
+# Add red color in line.
+ggplot(Data, aes(hspct_math))+geom_freqpoly(color="red")
+# Add bins number to make this line smoother
+ggplot(Data, aes(hspct_math))+geom_freqpoly(color="red", bins=10)
+# Add binwidth=42 to reduce the number of bins
+ggplot(Data, aes(hspct_math))+geom_freqpoly(color="red", binwidth=42)
+
+```
+
+## *Modify plot appearance for Density plot:* In this section, I am using attributes to modify the apprearance of the previous(original) density plot to make this more appealing for the viewers.(i) (color="red", fill="cyan4", alpha=0.5), use outline color, fill color and transparency to increase acceptance of this density plot to the viewers; (ii) adjust= 2, adjust the shape of this plot and make it smoother; (iii) kernel= "cosine", this doesn't make much difference though!
+
+```{r Modify plot appearance for Density plot}
+
+# Density plot for the continuous variable "credhrs_reg" (total registered credit hours!)
+# add outline color, fill color and transparency
+ggplot(Data, aes(credhrs_reg))+geom_density(color="red", fill="cyan4", alpha=0.5)
+# Adjust the shape
+ggplot(Data, aes(credhrs_reg))+geom_density(adjust= 2,color="red", fill="cyan4", alpha=0.5)
+# Use cosine kernel only to check what this look like!
+ggplot(Data, aes(credhrs_reg))+geom_density(kernel= "cosine",color="red", fill="cyan4", alpha=0.5)
+```
+
+#  **Task-3: Create three different plots using variables of your choosing that compare multiple distributions: density plots, boxplots, violin plots.  Use best practices as covered in the lesson to modify the plots appearance (color, fill, bandwidth, order, etc.) – EXPLAIN what you did and RATIONALIZE your choices!**
+
+***
+
+## *Plotting multiple distribution: Density plot, Boxplot, Violin plot:* There is no categorical variable in this dataset. I am seeing the gender variable but in numaric format. So, first convert this gender varaiable from numeric to factor(categorical) variable. I need categorical variable to draw plot for multiple variable distribution.  
+
+```{r Plotting multiple distribution: Density plots, Boxplots, Violin plots}
+# Density plots
+# x axis is continuous variable and y axis (fill) is categorical variable. First, convert the gender(gender1_F1M2) variable from numeric to factor. 
+Data$gender1_F1M2 <- as.factor(Data$gender1_F1M2)
+# Use geom_density()
+ggplot(Data, aes(GPA, fill=gender1_F1M2))+ geom_density()
+
+# Use geom_density_ridges()
+ggplot(Data, aes(GPA,gender1_F1M2))+ geom_density_ridges()
+
+# Boxplot 
+ggplot(Data, aes(GPA,gender1_F1M2))+ geom_boxplot()
+
+# Violin plots
+ggplot(Data, aes(GPA,gender1_F1M2))+ geom_violin()
+
+```
+
+## *Modify plot appearance for Density plots:* In this section, I am using attributes to modify the apprearance of the previous(original) density plot to make this more appealing for the viewers. (i) Add outline color, fill color and transparency. Adjust=1, make some adjustment in the plot. I am considering "NA" i.e mising gender because that's also a large group in this dataset!!
+
+```{r Modify plot appearance for Density plots}
+# Add outline color, fill color and transparency. Adjust=1, make some adjustment in the plot. I am considering "NA" i.e missing gender because that's also a large group in this excel file!!
+ggplot(Data, aes(GPA, fill=gender1_F1M2, color=gender1_F1M2))+ geom_density(adjust=1, alpha=0.3)
+
+# geom_density_ridges()
+ggplot(Data, aes(GPA,gender1_F1M2,fill=gender1_F1M2, alpha=0.8))+ geom_density_ridges()
+```
+
+
+## *Modify plot appearance for Boxplot:* In this section, I am using attributes to modify the apprearance of the previous(original) boxplot to make this more appealing for the viewers.(i) I interchange variable between x-axis and y-axis to rotate the boxplot. This makes the boxplot verticle which looks good, (ii) add outline color to each box to make this eye catchy. 
+
+
+```{r Modify plot appearance for Boxplot}
+# Add outline color in each box 
+ggplot(Data, aes(gender1_F1M2, GPA,color=gender1_F1M2))+ geom_boxplot()
+
+```
+
+
+## *Modify plot appearance for Violin plot:* In this section, I am using attributes to modify the apprearance of the previous(original) violin plot to make this more appealing for the viewers.(i) fill=gender1_F1M2, fill each violin plot based on gender; (ii) color="green", draw outline color for each violin plot as green.
+
+
+```{r Modify plot appearance for Violinplot}
+# Add outline color and fill color to increase the appealing
+ggplot(Data, aes(gender1_F1M2,GPA, fill=gender1_F1M2))+ geom_violin(color="green")
+
+```
