@@ -1,0 +1,75 @@
+---
+title: "DataAssignment_3"
+author: "Md. Saifur Rahman"
+date: "2/6/2021"
+output: word_document
+---
+```{r setup working directory}
+# Setup working directory for the assignment
+setwd("C:/Users/mdsaifur.rahman.1/Desktop/Spring 2021/EFR 535/Code R")
+```
+
+```{r load tidyverse}
+#install.packages("tidyverse")
+library(tidyverse)
+```
+
+```{r Tidy the data in Excel, preparing it for analysis in R}
+#Step 1: Delete row 1, 2, 4 and 5.These information are unwanted here.
+#Step 2: Delete Column D and E. These column are blank hence not necessary.
+#Step 3: Delete column A because this column represent same data which we will not require for data analysis. 
+#Step 3: Rename column C into Gender. 
+#Step 4: Same type of Data ELA proficiency spread in 3 column but must be in one column and each row must contain different observation. Create column 'ELA_Proficiency' and 'Year' and transform information from column F,G,H into these two column but in different rows of each column.
+#Step 5: Delete Column F,G,H.
+# Now this excel data looks like 'tidy' data!
+```
+
+```{r Import data into RStudio and attach the data}
+library(readxl)
+Data <- read_excel("EFR 535 Assign 3 - Tidy Data.xlsx", 
+    na = "NA")
+View(Data)
+attach(Data)
+
+```
+
+```{r  Explore and report the types of variables in the data}
+# Exploring the 'Environment' tab I can see there are four variables in this data set where (i) data type for the 'Test_Grade_level' variable is number (more specifically double), (ii) data type for the 'Gender' variable is character, (iii) data type for the 'Year' variable is character, (iv)data type for the 'ELA_Proficiency' variable is number (more specifically double).
+# Another way to check data type is using glimpse() function which will print entire data with data type.
+glimpse(Data)
+# Another way to check data type is using typeof() function which will provide data type of a specific variable.
+# Double means any numeric data. Double support double precision data which require 64 bits in memory to store that data.This is floating point/ decimal data type.  
+print(typeof(Test_Grade_Level))
+# Character data type support any string data. 
+print(typeof(Gender))
+print(typeof(Year))
+print(typeof(ELA_Proficiency))
+# Another way to check data type
+class(Test_Grade_Level)
+```
+
+```{r Chnage variable data type and then change the type back if necessary}
+# Change data type of the variable 'ELA_Proficiency' from double to character
+Data$ELA_Proficiency <- as.character(Data$ELA_Proficiency)
+# Change the data type back to double
+Data$ELA_Proficiency <- as.double(as.character(Data$ELA_Proficiency))
+```
+
+```{r Create a new data frame that contains no missing data and perform a test to confirm}
+# The '!is.na()' function check for any NA (missing values); if this find NA then print FALSE (because I am using not(!)), otherwise print TRUE. Then, 'all()' function check if all values are TRUE. I am using combination of these two functions which tells me TRUE only if there is no NA (missing value), otherwise tells FLASE. Now, this tells FALSE because I have NA in my Data.  
+all(!is.na(Data))  # will print FALSE
+# Create a data frame named 'Data_NoMissing' which will remove NA(missing data) by using complete.cases() function.
+Data_NoMissing <- Data[complete.cases(Data),] 
+# This tells me TRUE because I don't have any missing value in the 'Data_NoMissing' data frame.
+all(!is.na(Data_NoMissing))   # will Print TRUE
+
+```
+
+```{r navigating the new data frame}
+#Print out the 11th row
+Data_NoMissing[11,]
+#Print out the 3rd column
+Data_NoMissing[,3]
+#Print out the values for the 13th observation in the 2nd column
+Data_NoMissing[13,2]
+```
